@@ -1,5 +1,27 @@
 # React native audio helper
 A library for audio application.
+# Table of content
+- [Demo](#demo)
+- [Installation](#installation)
+  * [Install react-native-sound](#install-react-native-sound)
+  * [Install react-native-audio-helper](#install-react-native-audio-helper)
+- [Usage](#usage)
+- [Methods](#methods)
+  * [Play](#play)
+  * [Pause](#pause)
+  * [Stop](#stop)
+  * [Next](#next)
+  * [Previous](#previous)
+  * [Increase time](#increase-time)
+  * [Decrease time](#decrease-time)
+  * [Seek to time](#seek-to-time)
+  * [Set speed](#set-speed)
+  * [Shuffle](#shuffle)
+  * [Loop](#loop)
+  * [Mute](#mute)
+  * [Unmute](#unmute)
+  * [Set volume](#set-volume)
+- [Variables](#variables)
 # Demo
 - Link youtube: https://www.youtube.com/watch?v=OfUqaofrcMw
 - Link github: https://github.com/uit2712/RNPlaySound
