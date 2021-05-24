@@ -30,36 +30,36 @@ function App() {
     ...
 }
 ```
-|Param name|Type|Description|
-|---|---|---|
-|listSounds|ISoundFile|List sounds we will play|
-|timeRate|number|This is used for methods __increaseTime__, __decreaseTime__ => increase or decrease current time by __timeRate__ (seconds)|
-|isLogStatus|boolean|Log current status of player using __console.log__|
+|Param name|Type|Description|Default value|
+|---|---|---|---|
+|listSounds|ISoundFile|List sounds we will play|[]|
+|timeRate|number|This is used for methods __increaseTime__, __decreaseTime__ => increase or decrease current time by __timeRate__ (seconds)|15 (seconds)|
+|isLogStatus|boolean|Log current status of player using __console.log__|false|
 # Methods
 ## Play
 Play current audio
 ```js
-player.play();
+player.play(); // player.status='play'
 ```
 ## Pause
 Pause current audio
 ```js
-player.pause();
+player.pause(); // player.status='pause'
 ```
 ## Stop
 Stop current audio
 ```js
-player.stop();
+player.stop(); // player.status='stop'
 ```
 ## Next
 Move to next audio
 ```js
-player.next();
+player.next(); // player.status='next'
 ```
 ## Previous
 Back to previous audio
 ```js
-player.previous();
+player.previous(); // player.status='previous'
 ```
 ## Increase time
 Increase current time to next __timeRate__ (seconds)
@@ -87,3 +87,11 @@ player.setSpeed(1.25)
 |Param name|Type|Description|Default value|
 |---|---|---|---|
 |speed|number|Change current speed to __speed__|1|
+## Shuffle
+Random next or previous audio index
+```js
+player.shuffle(); // call odd time => isShuffle=true, call even time => isShuffle=false 
+```
+|Relative variable|Type|Description|Default value|
+|---|---|---|---|
+|isShuffle|boolean|Is shuffle or not|false|
