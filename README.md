@@ -86,12 +86,54 @@ player.setSpeed(1.25)
 ```
 |Param name|Type|Description|Default value|
 |---|---|---|---|
-|speed|number|Change current speed to __speed__|1|
+|speed|number|Change current speed to __speed__ (speed > 0.0 and speed <= 2.0)|1|
 ## Shuffle
 Random next or previous audio index
 ```js
-player.shuffle(); // call odd time => isShuffle=true, call even time => isShuffle=false 
+player.shuffle(); // call odd time (2n+1 time, n>0) => isShuffle=true, call even time (2n time, n>0) => isShuffle=false 
 ```
 |Relative variable|Type|Description|Default value|
 |---|---|---|---|
 |isShuffle|boolean|Is shuffle or not|false|
+## Loop
+Loop current audio
+```js
+player.loop(); // call odd time (2n+1 time, n>0) => isLoop=true, call even time (2n time, n>0) => isLoop=false
+```
+|Relative variable|Type|Description|Default value|
+|---|---|---|---|
+|isLoop|boolean|Is loop current audio or not|false|
+## Mute
+Mute player
+```js
+player.mute(); // isMuted=true
+```
+## Unmute
+```js
+player.unmute() // isMuted=false
+```
+## Set volume
+```js
+player.setVolume(50); // volume=50%
+```
+|Param name|Type|Description|Default value|
+|---|---|---|---|
+|volume|number|Change current volume to __volume__ (volume >= 0% and volume <= 100%)|100%|
+# Variables
+|Variable name|Type|Description|Default value|
+|---|---|---|---|
+|status|AudioStatusType|Current player's status|'loading'|
+|duration|number|Duration of current audio (seconds)||
+|currentTime|number|Current time of current audio (seconds)|0|
+|durationString|string|Duration string with format 'hh:mm:ss'||
+|currentTimeString|string|Current time string with format 'hh:mm:ss'||
+|currentAudioName|string|Current audio name|''|
+|isDisabledButtonPlay|boolean|Disabled button play or not||
+|isDisabledButtonPause|boolean|Disabled button pause or not||
+|isDisabledButtonStop|boolean|Disabled button stop or not||
+|timeRate|number|This is used for methods __increaseTime__, __decreaseTime__ => increase or decrease current time by __timeRate__ (seconds)|15 (seconds)|
+|speed|number|Change current speed to __speed__ (speed > 0.0 and speed <= 2.0)|1|
+|isShuffle|boolean|Is shuffle or not|false|
+|isLoop|boolean|Is loop current audio or not|false|
+|isMuted|boolean|Is mute player or not|false|
+|volume|number|Change current volume to __volume__ (volume >= 0% and volume <= 100%)|100%|
