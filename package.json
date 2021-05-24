@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/uit2712/RNAudioHelper.git"
+    "url": "git+https://github.com/uit2712/react-native-audio-helper.git"
   },
   "keywords": [
     "play sound in React Native"
@@ -17,7 +17,7 @@
   "author": "uit2712",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/uit2712/RNAudioHelper/issues"
+    "url": "https://github.com/uit2712/react-native-audio-helper/issues"
   },
-  "homepage": "https://github.com/uit2712/RNAudioHelper#readme"
+  "homepage": "https://github.com/uit2712/react-native-audio-helper#readme"
 }
