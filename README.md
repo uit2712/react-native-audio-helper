@@ -30,11 +30,11 @@ function App() {
     ...
 }
 ```
-|Param name|Type|Description|Default value|
+|__Param name__|Type|Description|Default value|
 |---|---|---|---|
-|listSounds|ISoundFile|List sounds we will play|[]|
-|timeRate|number|This is used for methods __increaseTime__, __decreaseTime__ => increase or decrease current time by __timeRate__ (seconds)|15 (seconds)|
-|isLogStatus|boolean|Log current status of player using __console.log__|false|
+|__listSounds__|ISoundFile|List sounds we will play|[]|
+|__timeRate__|number|This is used for methods __increaseTime__, __decreaseTime__ => increase or decrease current time by __timeRate__ (seconds)|15 (seconds)|
+|__isLogStatus__|boolean|Log current status of player using __console.log__|false|
 # Methods
 ## Play
 Play current audio
@@ -76,33 +76,33 @@ Change current time
 ```js
 player.seekToTime(15);
 ```
-|Param name|Type|Description|
+|__Param name__|Type|Description|
 |---|---|---|
-|seconds|number|Change current time to __seconds__|
+|__seconds__|number|Change current time to __seconds__|
 ## Set speed
 Change player's speed
 ```js
 player.setSpeed(1.25)
 ```
-|Param name|Type|Description|Default value|
+|__Param name__|Type|Description|Default value|
 |---|---|---|---|
-|speed|number|Change current speed to __speed__ (speed > 0.0 and speed <= 2.0)|1|
+|__speed__|number|Change current speed to __speed__ (speed > 0.0 and speed <= 2.0)|1|
 ## Shuffle
 Random next or previous audio index
 ```js
 player.shuffle(); // call odd time (2n+1 time, n>0) => isShuffle=true, call even time (2n time, n>0) => isShuffle=false 
 ```
-|Relative variable|Type|Description|Default value|
+|__Relative variable__|Type|Description|Default value|
 |---|---|---|---|
-|isShuffle|boolean|Is shuffle or not|false|
+|__isShuffle__|boolean|Is shuffle or not|false|
 ## Loop
 Loop current audio
 ```js
 player.loop(); // call odd time (2n+1 time, n>0) => isLoop=true, call even time (2n time, n>0) => isLoop=false
 ```
-|Relative variable|Type|Description|Default value|
+|__Relative variable__|Type|Description|Default value|
 |---|---|---|---|
-|isLoop|boolean|Is loop current audio or not|false|
+|__isLoop__|boolean|Is loop current audio or not|false|
 ## Mute
 Mute player
 ```js
@@ -116,24 +116,24 @@ player.unmute() // isMuted=false
 ```js
 player.setVolume(50); // volume=50%
 ```
-|Param name|Type|Description|Default value|
+|__Param name__|Type|Description|Default value|
 |---|---|---|---|
-|volume|number|Change current volume to __volume__ (volume >= 0% and volume <= 100%)|100%|
+|__volume__|number|Change current volume to __volume__ (volume >= 0% and volume <= 100%)|100%|
 # Variables
-|Variable name|Type|Description|Default value|
+|__Variable name__|__Type__|__Description__|__Default value__|
 |---|---|---|---|
-|status|AudioStatusType|Current player's status|'loading'|
-|duration|number|Duration of current audio (seconds)||
-|currentTime|number|Current time of current audio (seconds)|0|
-|durationString|string|Duration string with format 'hh:mm:ss'||
-|currentTimeString|string|Current time string with format 'hh:mm:ss'||
-|currentAudioName|string|Current audio name|''|
-|isDisabledButtonPlay|boolean|Disabled button play or not||
-|isDisabledButtonPause|boolean|Disabled button pause or not||
-|isDisabledButtonStop|boolean|Disabled button stop or not||
-|timeRate|number|This is used for methods __increaseTime__, __decreaseTime__ => increase or decrease current time by __timeRate__ (seconds)|15 (seconds)|
-|speed|number|Change current speed to __speed__ (speed > 0.0 and speed <= 2.0)|1|
-|isShuffle|boolean|Is shuffle or not|false|
-|isLoop|boolean|Is loop current audio or not|false|
-|isMuted|boolean|Is mute player or not|false|
-|volume|number|Change current volume to __volume__ (volume >= 0% and volume <= 100%)|100%|
+|__status__|AudioStatusType|Current player's status|'loading'|
+|__duration__|number|Duration of current audio (seconds)||
+|__currentTime__|number|Current time of current audio (seconds)|0|
+|__durationString__|string|Duration string with format 'hh:mm:ss'||
+|__currentTimeString__|string|Current time string with format 'hh:mm:ss'||
+|__currentAudioName__|string|Current audio name|''|
+|__isDisabledButtonPlay__|boolean|Disabled button play or not||
+|__isDisabledButtonPause__|boolean|Disabled button pause or not||
+|__isDisabledButtonStop__|boolean|Disabled button stop or not||
+|__timeRate__|number|This is used for methods __increaseTime__, __decreaseTime__ => increase or decrease current time by __timeRate__ (seconds)|15 (seconds)|
+|__speed__|number|Change current speed to __speed__ (speed > 0.0 and speed <= 2.0)|1|
+|__isShuffle__|boolean|Is shuffle or not|false|
+|__isLoop__|boolean|Is loop current audio or not|false|
+|__isMuted__|boolean|Is mute player or not|false|
+|__volume__|number|Change current volume to __volume__ (volume >= 0% and volume <= 100%)|100%|
