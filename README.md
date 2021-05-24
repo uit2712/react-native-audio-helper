@@ -99,7 +99,7 @@ player.decreaseTime();
 ## Seek to time
 Change current time
 ```js
-player.seekToTime(15);
+player.seekToTime(15); // seconds
 ```
 |__Param name__|Type|Description|
 |---|---|---|
@@ -107,7 +107,7 @@ player.seekToTime(15);
 ## Set speed
 Change player's speed
 ```js
-player.setSpeed(1.25)
+player.setSpeed(1.25);
 ```
 |__Param name__|Type|Description|Default value|
 |---|---|---|---|
@@ -134,6 +134,7 @@ Mute player
 player.mute(); // isMuted=true
 ```
 ## Unmute
+Unmute player
 ```js
 player.unmute() // isMuted=false
 ```
