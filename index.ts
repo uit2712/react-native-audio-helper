@@ -1,5 +1,6 @@
 import SoundPlayer from 'react-native-sound';
 import React from 'react';
+import { shuffleArray } from './functions';
 
 interface ISoundFile {
     path: string | NodeRequire;
@@ -14,46 +15,6 @@ interface IUseAudioHelper {
     listSounds: ISoundFile[];
     timeRate?: number; // seconds
     isLogStatus?: boolean;
-}
-
-/* Randomize array in-place using Durstenfeld shuffle algorithm */
-function shuffleArray<T>(array: T[]) {
-    for (let i = array.length - 1; i > 0; i--) {
-        let j = Math.floor(Math.random() * (i + 1));
-        let temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
-
-    return array;
-}
-
-/**
- * Returns a random number between min (inclusive) and max (exclusive)
- */
-function getRandomArbitrary({
-    min,
-    max,
-    exceptValue
-}: {
-    min: number,
-    max: number,
-    exceptValue?: number,
-}) {
-    if (max - min <= 0) {
-        return 0;
-    }
-
-    let result = Math.floor((Math.random() * min) + max);
-    if (exceptValue === null || exceptValue === undefined) {
-        return result;
-    }
-
-    while(result === exceptValue) {
-        result = Math.floor(Math.random() * max) + min;
-    }
-
-    return result;
 }
 
 export function useAudioHelper(request: IUseAudioHelper) {
