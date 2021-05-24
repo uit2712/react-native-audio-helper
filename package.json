@@ -1,0 +1,22 @@
+{
+  "name": "react-native-audio-helper",
+  "version": "1.1.0",
+  "description": "A library play audio based on react-native-sound",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uit2712/RNAudioHelper.git"
+  },
+  "keywords": [
+    "play sound in React Native"
+  ],
+  "author": "uit2712",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/uit2712/RNAudioHelper/issues"
+  },
+  "homepage": "https://github.com/uit2712/RNAudioHelper#readme"
+}
