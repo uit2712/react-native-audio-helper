@@ -17,11 +17,6 @@ import SoundPlayer from 'react-native-sound';
 import { useAudioHelper } from './helpers/audio-helper';
 
 function App() {
-    /**
-    * @param listSounds: List sounds we will play
-    * @param timeRate: This is used for methods increaseTime, decreaseTime => increase or decrease current time by timeRate (seconds)
-    * @param isLogStatus: Log current status of player
-    */
     const player = useAudioHelper({
         listSounds: [
             { path: 'blue_dream_cheel.mp3', name: 'Blue Dream - Cheel', basePath: SoundPlayer.MAIN_BUNDLE },
@@ -35,6 +30,11 @@ function App() {
     ...
 }
 ```
+|Param name|Type|Description|
+|---|---|---|
+|listSounds|ISoundFile|List sounds we will play|
+|timeRate|number|This is used for methods __increaseTime__, __decreaseTime__ => increase or decrease current time by __timeRate__ (seconds)|
+|isLogStatus|boolean|Log current status of player using __console.log__|
 # Methods
 ## Play
 Play current audio
