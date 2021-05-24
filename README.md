@@ -79,3 +79,11 @@ player.seekToTime(15);
 |Param name|Type|Description|
 |---|---|---|
 |seconds|number|Change current time to __seconds__|
+## Set speed
+Change player's speed
+```js
+player.setSpeed(1.25)
+```
+|Param name|Type|Description|Default value|
+|---|---|---|---|
+|speed|number|Change current speed to __speed__|1|
