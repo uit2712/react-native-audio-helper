@@ -1,5 +1,8 @@
 # React native audio helper
 A library for audio application.
+# Demo
+- Link youtube: https://www.youtube.com/watch?v=OfUqaofrcMw
+- Link github: https://github.com/uit2712/RNPlaySound
 # Installation
 ## Install react-native-sound
 Link: https://github.com/zmxv/react-native-sound
