@@ -8,6 +8,7 @@ interface IRequestAudioHelper {
     listSounds: SoundFileType[];
     timeRate?: number; // seconds
     isLogStatus?: boolean;
+    isAutoplayOnLoad?: boolean;
 }
 
 type SoundFileType = {
@@ -65,11 +66,13 @@ export function useAudioHelper(request: IRequestAudioHelper = {
     listSounds: [],
     isLogStatus: false,
     timeRate: 15,
+    isAutoplayOnLoad: false,
 }): IResponseAudioHelper {
     const [listSounds, setListSounds] = React.useState(request.listSounds);
     const [timeRate, setTimeRate] = React.useState(request.timeRate ?? 15); // seconds
     const [status, setStatus] = React.useState<AudioStatusType>('loading');
     const [errorMessage, setErrorMessage] = React.useState('');
+    const [isFirstTimePlay, setIsFirstTimePlay] = React.useState(true);
     
     const [currentTime, setCurrentTime] = React.useState(0);
     React.useEffect(() => {
@@ -117,7 +120,12 @@ export function useAudioHelper(request: IRequestAudioHelper = {
                 player.setSpeed(speed);
                 setDuration(player.getDuration());
                 changeVolume(player, volume);
-                play(player);
+
+                if (request.isAutoplayOnLoad === true && isFirstTimePlay === false) {
+                    play(player);
+                } else {
+                    setIsFirstTimePlay(false);
+                }
             }
 
             const currentAudio = listSounds[index];
