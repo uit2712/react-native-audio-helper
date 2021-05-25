@@ -2,26 +2,69 @@ import SoundPlayer from 'react-native-sound';
 import React from 'react';
 import { shuffleArray } from './functions';
 
-interface ISoundFile {
-    path: string | NodeRequire;
-    basePath?: string;
-    name: string;
-    isRequired?: boolean;
-}
-
 type AudioStatusType = 'loading' | 'success' | 'error' | 'play' | 'pause' | 'next' | 'previous' | 'stop';
 
-interface IUseAudioHelper {
-    listSounds: ISoundFile[];
+interface IRequestAudioHelper {
+    listSounds: SoundFileType[];
     timeRate?: number; // seconds
     isLogStatus?: boolean;
 }
 
-export function useAudioHelper(request: IUseAudioHelper = {
+type SoundFileType = {
+    type: 'app-bundle';
+    name: string;
+    path: string;
+    basePath: string;
+} | {
+    type: 'network';
+    name: string;
+    path: string;
+} | {
+    type: 'directory';
+    name: string;
+    path: NodeRequire;
+};
+
+export interface IResponseAudioHelper {
+    play: () => void;
+    pause: () => void;
+    stop: () => void;
+    next: () => void;
+    previous: () => void;
+    increaseTime: () => void;
+    decreaseTime: () => void;
+    seekToTime: (seconds) => void;
+    setSpeed: (speed: number) => void;
+    shuffle: () => void;
+    loop: () => void;
+    mute: () => void;
+    unmute: () => void;
+    setVolume: (volume: number) => void;
+    status: AudioStatusType;
+    duration: number; // seconds
+    currentTime: number; // seconds
+    durationString: string;
+    currentTimeString: string;
+    currentAudioName: string;
+    isDisabledButtonPlay: boolean;
+    isDisabledButtonPause: boolean;
+    isDisabledButtonStop: boolean;
+    isDisabledButtonNext: boolean;
+    isDisabledButtonPrevious: boolean;
+    timeRate: number; // seconds
+    speed: number;
+    isShuffle: boolean;
+    errorMessage: string;
+    isLoop: boolean;
+    isMuted: boolean;
+    volume: number; // percents from 0-100
+}
+
+export function useAudioHelper(request: IRequestAudioHelper = {
     listSounds: [],
     isLogStatus: false,
     timeRate: 15,
-}) {
+}): IResponseAudioHelper {
     const [listSounds, setListSounds] = React.useState(request.listSounds);
     const [timeRate, setTimeRate] = React.useState(request.timeRate); // seconds
     const [status, setStatus] = React.useState<AudioStatusType>('loading');
@@ -73,11 +116,20 @@ export function useAudioHelper(request: IUseAudioHelper = {
 
             const currentAudio = listSounds[index];
             // If the audio is a 'require' then the second parameter must be the callback.
-            if (currentAudio.isRequired === true) {
-                const newPlayer = new SoundPlayer(currentAudio.path, (error) => callback(error, newPlayer));
-                setPlayer(newPlayer);
-            } else {
-                const newPlayer = new SoundPlayer(currentAudio.path, currentAudio.basePath, (error) => callback(error, newPlayer));
+            let newPlayer: SoundPlayer = null;
+            switch(currentAudio.type) {
+                default: break;
+                case 'app-bundle':
+                    newPlayer = new SoundPlayer(currentAudio.path, currentAudio.basePath, (error) => callback(error, newPlayer));
+                    break;
+                case 'network':
+                    newPlayer = new SoundPlayer(currentAudio.path, null, (error) => callback(error, newPlayer));
+                    break;
+                case 'directory':
+                    newPlayer = new SoundPlayer(currentAudio.path, (error) => callback(error, newPlayer));
+                    break;
+            }
+            if (newPlayer) {
                 setPlayer(newPlayer);
             }
         }
