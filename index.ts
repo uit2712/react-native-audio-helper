@@ -66,7 +66,7 @@ export function useAudioHelper(request: IRequestAudioHelper = {
     timeRate: 15,
 }): IResponseAudioHelper {
     const [listSounds, setListSounds] = React.useState(request.listSounds);
-    const [timeRate, setTimeRate] = React.useState(request.timeRate); // seconds
+    const [timeRate, setTimeRate] = React.useState(request.timeRate ?? 15); // seconds
     const [status, setStatus] = React.useState<AudioStatusType>('loading');
     const [errorMessage, setErrorMessage] = React.useState('');
     
@@ -92,7 +92,7 @@ export function useAudioHelper(request: IRequestAudioHelper = {
     }
 
     const [duration, setDuration] = React.useState(0);
-    const [player, setPlayer] = React.useState<SoundPlayer>(null);
+    const [player, setPlayer] = React.useState<SoundPlayer>();
 
     function initialize() {
         setStatus('loading');
@@ -101,7 +101,11 @@ export function useAudioHelper(request: IRequestAudioHelper = {
                 player.release();
             }
 
-            const callback = (error, player: SoundPlayer) => {
+            const callback = (error: Error, player?: SoundPlayer) => {
+                if (!player) {
+                    return;
+                }
+
                 if (error) {
                     setStatus('error');
                     setErrorMessage(error.message);
@@ -116,14 +120,14 @@ export function useAudioHelper(request: IRequestAudioHelper = {
 
             const currentAudio = listSounds[index];
             // If the audio is a 'require' then the second parameter must be the callback.
-            let newPlayer: SoundPlayer = null;
+            let newPlayer: SoundPlayer | undefined;
             switch(currentAudio.type) {
                 default: break;
                 case 'app-bundle':
-                    newPlayer = new SoundPlayer(currentAudio.path, currentAudio.basePath, (error) => callback(error, newPlayer));
+                    newPlayer = new SoundPlayer(currentAudio.path, currentAudio.basePath, (error: Error) => callback(error, newPlayer));
                     break;
                 case 'network':
-                    newPlayer = new SoundPlayer(currentAudio.path, null, (error) => callback(error, newPlayer));
+                    newPlayer = new SoundPlayer(currentAudio.path, undefined, (error) => callback(error, newPlayer));
                     break;
                 case 'directory':
                     newPlayer = new SoundPlayer(currentAudio.path, (error) => callback(error, newPlayer));
@@ -186,7 +190,7 @@ export function useAudioHelper(request: IRequestAudioHelper = {
         play(player);
     }
 
-    function play(player: SoundPlayer) {
+    function play(player?: SoundPlayer) {
         if (player) {
             if (isMuted === true) {
                 changeVolume(player, 0);
@@ -286,7 +290,7 @@ export function useAudioHelper(request: IRequestAudioHelper = {
 
     const [volume, setVolume] = React.useState(100); // percent
     const [previousVolume, setPreviousVolume] = React.useState(volume);
-    function changeVolume(player: SoundPlayer, volume: number) {
+    function changeVolume(player: SoundPlayer | undefined, volume: number) {
         if (player && volume >= 0 && volume <= 100) {
             player.setVolume(volume / 100.0);
             setVolume(volume);
