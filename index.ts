@@ -33,7 +33,7 @@ export interface IResponseAudioHelper {
     previous: () => void;
     increaseTime: () => void;
     decreaseTime: () => void;
-    seekToTime: (seconds) => void;
+    seekToTime: (seconds: number) => void;
     setSpeed: (speed: number) => void;
     shuffle: () => void;
     loop: () => void;
