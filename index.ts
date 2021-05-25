@@ -115,6 +115,7 @@ export function useAudioHelper(request: IRequestAudioHelper = {
                 }
                 player.setSpeed(speed);
                 setDuration(player.getDuration());
+                changeVolume(player, volume);
                 play(player);
             }
 
