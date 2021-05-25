@@ -11,19 +11,31 @@ interface IRequestAudioHelper {
     isAutoplayOnLoad?: boolean;
 }
 
-type SoundFileType = {
+export type SoundFileType = {
     type: 'app-bundle';
     name: string;
     path: string;
     basePath: string;
+    author?: string;
+    album?: string;
+    genre?: string;
+    cover?: string;
 } | {
     type: 'network';
     name: string;
     path: string;
+    author?: string;
+    album?: string;
+    genre?: string;
+    cover?: string;
 } | {
     type: 'directory';
     name: string;
     path: NodeRequire;
+    author?: string;
+    album?: string;
+    genre?: string;
+    cover?: string;
 };
 
 export interface IResponseAudioHelper {
@@ -68,7 +80,6 @@ export function useAudioHelper(request: IRequestAudioHelper = {
     timeRate: 15,
     isAutoplayOnLoad: false,
 }): IResponseAudioHelper {
-    const [listSounds, setListSounds] = React.useState(request.listSounds);
     const [timeRate, setTimeRate] = React.useState(request.timeRate ?? 15); // seconds
     const [status, setStatus] = React.useState<AudioStatusType>('loading');
     const [errorMessage, setErrorMessage] = React.useState('');
@@ -108,7 +119,7 @@ export function useAudioHelper(request: IRequestAudioHelper = {
     }
 
     function initPlayer(audioIndex: number) {
-        if (audioIndex >= 0 && audioIndex < listSounds.length) {
+        if (audioIndex >= 0 && audioIndex < request.listSounds.length) {
             if (player) {
                 player.release();
             }
@@ -132,7 +143,7 @@ export function useAudioHelper(request: IRequestAudioHelper = {
                 play(player);
             }
             
-            const currentAudio = listSounds[audioIndex];
+            const currentAudio = request.listSounds[audioIndex];
             // If the audio is a 'require' then the second parameter must be the callback.
             let newPlayer: SoundPlayer | undefined;
             switch(currentAudio.type) {
@@ -185,6 +196,12 @@ export function useAudioHelper(request: IRequestAudioHelper = {
                     break;
                 case 'stop':
                     console.log('stop...');
+                    break;
+                case 'error':
+                    console.log('error...');
+                    break;
+                case 'success':
+                    console.log('success...');
                     break;
             }
         }
@@ -353,7 +370,7 @@ export function useAudioHelper(request: IRequestAudioHelper = {
     }
 
     function getCurrentAudioName() {
-        return listSounds[index].name;
+        return request.listSounds.length > 0 ? request.listSounds[index].name : '';
     }
 
     function isDisabledButtonPlay() {
@@ -369,7 +386,7 @@ export function useAudioHelper(request: IRequestAudioHelper = {
     }
 
     function isDisabledButtonNext() {
-        return status === 'loading' || index === listSounds.length - 1;
+        return status === 'loading' || index === request.listSounds.length - 1;
     }
 
     function isDisabledButtonPrevious() {
