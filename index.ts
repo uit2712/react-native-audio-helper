@@ -40,6 +40,7 @@ export interface IResponseAudioHelper {
     mute: () => void;
     unmute: () => void;
     setVolume: (volume: number) => void;
+    playAudio: (audioIndex: number) => void;
     status: AudioStatusType;
     duration: number; // seconds
     currentTime: number; // seconds
@@ -321,6 +322,14 @@ export function useAudioHelper(request: IRequestAudioHelper = {
         }
     }
 
+    function playAudio(audioIndex: number) {
+        if (player && audioIndex !== index && audioIndex >= 0 && audioIndex < listSounds.length) {
+            player.release();
+            setCurrentTime(0);
+            setIndex(audioIndex);
+        }
+    }
+
     function formatTimeString(value: number) {
         return new Date(value * 1000).toISOString().substr(11, 8)
     }
@@ -372,6 +381,7 @@ export function useAudioHelper(request: IRequestAudioHelper = {
         mute,
         unmute,
         setVolume: (volume: number) => changeVolume(player, volume),
+        playAudio,
         status,
         duration,
         currentTime,
