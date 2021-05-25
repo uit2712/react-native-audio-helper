@@ -100,7 +100,15 @@ export function useAudioHelper(request: IRequestAudioHelper = {
 
     function initialize() {
         setStatus('loading');
-        if (listSounds.length > 0) {
+        if (request.isAutoplayOnLoad === true || isFirstTimePlay === false) {
+            initPlayer(index);
+        } else {
+            setIsFirstTimePlay(false);
+        }
+    }
+
+    function initPlayer(audioIndex: number) {
+        if (audioIndex >= 0 && audioIndex < listSounds.length) {
             if (player) {
                 player.release();
             }
@@ -109,7 +117,7 @@ export function useAudioHelper(request: IRequestAudioHelper = {
                 if (!player) {
                     return;
                 }
-
+    
                 if (error) {
                     setStatus('error');
                     setErrorMessage(error.message);
@@ -118,17 +126,13 @@ export function useAudioHelper(request: IRequestAudioHelper = {
                     setErrorMessage('');
                 }
                 player.setSpeed(speed);
+                player.setCurrentTime(0);
                 setDuration(player.getDuration());
                 changeVolume(player, volume);
-
-                if (request.isAutoplayOnLoad === true && isFirstTimePlay === false) {
-                    play(player);
-                } else {
-                    setIsFirstTimePlay(false);
-                }
+                play(player);
             }
-
-            const currentAudio = listSounds[index];
+            
+            const currentAudio = listSounds[audioIndex];
             // If the audio is a 'require' then the second parameter must be the callback.
             let newPlayer: SoundPlayer | undefined;
             switch(currentAudio.type) {
@@ -147,6 +151,7 @@ export function useAudioHelper(request: IRequestAudioHelper = {
                 setPlayer(newPlayer);
             }
         }
+
     }
 
     const [index, setIndex] = React.useState(0);
@@ -201,7 +206,9 @@ export function useAudioHelper(request: IRequestAudioHelper = {
     }
 
     function play(player?: SoundPlayer) {
-        if (player) {
+        if (!player) {
+            initPlayer(index);
+        } else {
             if (isMuted === true) {
                 changeVolume(player, 0);
             }
@@ -230,10 +237,9 @@ export function useAudioHelper(request: IRequestAudioHelper = {
     }, [index]);
     
     function next() {
-        if (player && request.listSounds.length) {
-            player.release();
-            setCurrentTime(0);
+        if (request.listSounds.length) {
             setStatus('next');
+            setIsFirstTimePlay(false);
             
             if (isShuffle === true) {
                 let newRemainingIndices = shuffleArray(remainingIndices.length === 0 ? [...Array(request.listSounds.length).keys()].filter(value => value !== index) : remainingIndices);
@@ -246,11 +252,9 @@ export function useAudioHelper(request: IRequestAudioHelper = {
     }
 
     function previous() {
-        if (player && index > 0) {
-            player.release();
-            setCurrentTime(0);
+        if (index >= 0) {
             setStatus('previous');
-            setIndex(index - 1);
+            setIsFirstTimePlay(false);
 
             if (isShuffle === true) {
                 let newRemainingIndices = shuffleArray(remainingIndices.length === 0 ? [...Array(request.listSounds.length).keys()].filter(value => value !== index) : remainingIndices);
@@ -331,10 +335,8 @@ export function useAudioHelper(request: IRequestAudioHelper = {
     }
 
     function playAudio(audioIndex: number) {
-        if (player && audioIndex !== index && audioIndex >= 0 && audioIndex < listSounds.length) {
-            player.release();
-            setCurrentTime(0);
-            setIndex(audioIndex);
+        if (!player) {
+            initPlayer(audioIndex);
         }
     }
 
