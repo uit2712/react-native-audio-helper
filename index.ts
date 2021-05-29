@@ -112,6 +112,23 @@ export function useAudioHelper(request: IRequestAudioHelper = {
     const [duration, setDuration] = React.useState(0);
     const [player, setPlayer] = React.useState<SoundPlayer>();
 
+    function configNewPlayer({
+        newPlayer,
+        audioIndex,
+    }: {
+        newPlayer?: SoundPlayer,
+        audioIndex: number,
+    }) {
+        if (newPlayer) {
+            setIndex(audioIndex);
+            newPlayer.setSpeed(speed);
+            newPlayer.setCurrentTime(0);
+            setDuration(newPlayer.getDuration());
+            changeVolume(newPlayer, volume);
+            setPlayer(newPlayer);
+        }
+    }
+
     function initPlayer(audioIndex: number) {
         return new Promise((resolve: (value?: SoundPlayer) => void) => {
             if (audioIndex >= 0 && audioIndex < listSounds.length) {
@@ -136,7 +153,6 @@ export function useAudioHelper(request: IRequestAudioHelper = {
                     player.setCurrentTime(0);
                     setDuration(player.getDuration());
                     changeVolume(player, volume);
-                    setIndex(audioIndex);
                     resolve(player);
                     return;
                 }
@@ -157,6 +173,8 @@ export function useAudioHelper(request: IRequestAudioHelper = {
                         break;
                 }
                 if (newPlayer) {
+                    setIndex(audioIndex);
+                    seekToTime(0);
                     setPlayer(newPlayer);
                 }
             } else {
@@ -358,7 +376,6 @@ export function useAudioHelper(request: IRequestAudioHelper = {
     }
 
     function playAudio(audioIndex: number) {
-        console.log(audioIndex, ' ', index);
         if (audioIndex !== index) {
             initPlayer(audioIndex).then((player?: SoundPlayer) => {
                 if (player) {
