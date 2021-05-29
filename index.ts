@@ -54,6 +54,7 @@ export interface IResponseAudioHelper {
     unmute: () => void;
     setVolume: (volume: number) => void;
     playAudio: (audioIndex: number) => void;
+    setListSounds: (listSounds: SoundFileType[]) => void;
     status: AudioStatusType;
     duration: number; // seconds
     currentTime: number; // seconds
@@ -72,6 +73,7 @@ export interface IResponseAudioHelper {
     isLoop: boolean;
     isMuted: boolean;
     volume: number; // percents from 0-100
+    currentIndex: number;
 }
 
 export function useAudioHelper(request: IRequestAudioHelper = {
@@ -83,7 +85,8 @@ export function useAudioHelper(request: IRequestAudioHelper = {
     const [timeRate, setTimeRate] = React.useState(request.timeRate ?? 15); // seconds
     const [status, setStatus] = React.useState<AudioStatusType>('loading');
     const [errorMessage, setErrorMessage] = React.useState('');
-    const [isFirstTimePlay, setIsFirstTimePlay] = React.useState(true);
+
+    const [listSounds, setListSounds] = React.useState(request.listSounds);
     
     const [currentTime, setCurrentTime] = React.useState(0);
     React.useEffect(() => {
@@ -109,67 +112,60 @@ export function useAudioHelper(request: IRequestAudioHelper = {
     const [duration, setDuration] = React.useState(0);
     const [player, setPlayer] = React.useState<SoundPlayer>();
 
-    function initialize() {
-        setStatus('loading');
-        if (request.isAutoplayOnLoad === true || isFirstTimePlay === false) {
-            initPlayer(index);
-        } else {
-            setIsFirstTimePlay(false);
-        }
-    }
-
     function initPlayer(audioIndex: number) {
-        if (audioIndex >= 0 && audioIndex < request.listSounds.length) {
-            if (player) {
-                player.release();
-            }
-
-            const callback = (error: Error, player?: SoundPlayer) => {
-                if (!player) {
-                    return;
+        return new Promise((resolve: (value?: SoundPlayer) => void) => {
+            if (audioIndex >= 0 && audioIndex < listSounds.length) {
+                if (player) {
+                    player.release();
                 }
     
-                if (error) {
-                    setStatus('error');
-                    setErrorMessage(error.message);
-                } else {
-                    setStatus('success');
-                    setErrorMessage('');
+                const callback = (error: Error, player?: SoundPlayer) => {
+                    if (!player) {
+                        resolve(undefined);
+                        return;
+                    }
+        
+                    if (error) {
+                        setStatus('error');
+                        setErrorMessage(error.message);
+                    } else {
+                        setStatus('success');
+                        setErrorMessage('');
+                    }
+                    player.setSpeed(speed);
+                    player.setCurrentTime(0);
+                    setDuration(player.getDuration());
+                    changeVolume(player, volume);
+                    setIndex(audioIndex);
+                    resolve(player);
+                    return;
                 }
-                player.setSpeed(speed);
-                player.setCurrentTime(0);
-                setDuration(player.getDuration());
-                changeVolume(player, volume);
-                play(player);
+                
+                const currentAudio = listSounds[audioIndex];
+                // If the audio is a 'require' then the second parameter must be the callback.
+                let newPlayer: SoundPlayer | undefined;
+                switch(currentAudio.type) {
+                    default: break;
+                    case 'app-bundle':
+                        newPlayer = new SoundPlayer(currentAudio.path, currentAudio.basePath, (error: Error) => callback(error, newPlayer));
+                        break;
+                    case 'network':
+                        newPlayer = new SoundPlayer(currentAudio.path, undefined, (error) => callback(error, newPlayer));
+                        break;
+                    case 'directory':
+                        newPlayer = new SoundPlayer(currentAudio.path, (error) => callback(error, newPlayer));
+                        break;
+                }
+                if (newPlayer) {
+                    setPlayer(newPlayer);
+                }
+            } else {
+                resolve(undefined);
             }
-            
-            const currentAudio = request.listSounds[audioIndex];
-            // If the audio is a 'require' then the second parameter must be the callback.
-            let newPlayer: SoundPlayer | undefined;
-            switch(currentAudio.type) {
-                default: break;
-                case 'app-bundle':
-                    newPlayer = new SoundPlayer(currentAudio.path, currentAudio.basePath, (error: Error) => callback(error, newPlayer));
-                    break;
-                case 'network':
-                    newPlayer = new SoundPlayer(currentAudio.path, undefined, (error) => callback(error, newPlayer));
-                    break;
-                case 'directory':
-                    newPlayer = new SoundPlayer(currentAudio.path, (error) => callback(error, newPlayer));
-                    break;
-            }
-            if (newPlayer) {
-                setPlayer(newPlayer);
-            }
-        }
-
+        });
     }
 
-    const [index, setIndex] = React.useState(0);
-    React.useEffect(() => {
-        initialize();
-    }, [index]);
-
+    const [index, setIndex] = React.useState(-1);
     const [isShuffle, setIsShuffle] = React.useState(false);
     function shuffle() {
         setIsShuffle(!isShuffle);
@@ -219,18 +215,26 @@ export function useAudioHelper(request: IRequestAudioHelper = {
 
     function repeat() {
         setCurrentTime(0);
-        play(player);
+        play();
     }
 
-    function play(player?: SoundPlayer) {
-        if (!player) {
-            initPlayer(index);
-        } else {
+    function playCurrentIndex(player?: SoundPlayer) {
+        if (player) {
             if (isMuted === true) {
                 changeVolume(player, 0);
             }
             player.play(playComplete);
             setStatus('play');
+        }
+    }
+
+    function play() {
+        if (!player) {
+            initPlayer(index).then((result?: SoundPlayer) => {
+                playCurrentIndex(result);
+            }).catch(() => {});
+        } else {
+            playCurrentIndex(player);
         }
     }
 
@@ -248,38 +252,40 @@ export function useAudioHelper(request: IRequestAudioHelper = {
         }
     }
 
-    const [remainingIndices, setRemainingIndices] = React.useState([...Array(request.listSounds.length).keys()].filter(value => value !== index));
+    const [remainingIndices, setRemainingIndices] = React.useState([...Array(listSounds.length).keys()].filter(value => value !== index));
     React.useEffect(() => {
         setRemainingIndices(remainingIndices.filter(value => value !== index));
     }, [index]);
     
     function next() {
-        if (request.listSounds.length) {
+        if (listSounds.length > 0) {
             setStatus('next');
-            setIsFirstTimePlay(false);
             
+            let newIndex = -1;
             if (isShuffle === true) {
-                let newRemainingIndices = shuffleArray(remainingIndices.length === 0 ? [...Array(request.listSounds.length).keys()].filter(value => value !== index) : remainingIndices);
+                let newRemainingIndices = shuffleArray(remainingIndices.length === 0 ? [...Array(listSounds.length).keys()].filter(value => value !== index) : remainingIndices);
                 setRemainingIndices(newRemainingIndices);
-                setIndex(newRemainingIndices[0]);
+                newIndex = newRemainingIndices[0] as number;
             } else {
-                setIndex((index + 1) % request.listSounds.length);
+                newIndex = (index + 1) % listSounds.length;
             }
+            playAudio(newIndex);
         }
     }
 
     function previous() {
-        if (index >= 0) {
+        if (listSounds.length > 0 && index >= 0) {
             setStatus('previous');
-            setIsFirstTimePlay(false);
 
+            let newIndex = -1;
             if (isShuffle === true) {
-                let newRemainingIndices = shuffleArray(remainingIndices.length === 0 ? [...Array(request.listSounds.length).keys()].filter(value => value !== index) : remainingIndices);
+                let newRemainingIndices = shuffleArray(remainingIndices.length === 0 ? [...Array(listSounds.length).keys()].filter(value => value !== index) : remainingIndices);
                 setRemainingIndices(newRemainingIndices);
-                setIndex(newRemainingIndices[0]);
+                newIndex = newRemainingIndices[0] as number;
             } else {
-                setIndex(index - 1 >= 0 ? index - 1 : request.listSounds.length - 1);
+                newIndex = index - 1 >= 0 ? index - 1 : listSounds.length - 1;
             }
+            playAudio(newIndex);
         }
     }
 
@@ -352,8 +358,13 @@ export function useAudioHelper(request: IRequestAudioHelper = {
     }
 
     function playAudio(audioIndex: number) {
-        if (!player) {
-            initPlayer(audioIndex);
+        console.log(audioIndex, ' ', index);
+        if (audioIndex !== index) {
+            initPlayer(audioIndex).then((player?: SoundPlayer) => {
+                if (player) {
+                    playCurrentIndex(player);
+                }
+            }).catch(() => {});
         }
     }
 
@@ -370,7 +381,7 @@ export function useAudioHelper(request: IRequestAudioHelper = {
     }
 
     function getCurrentAudioName() {
-        return request.listSounds.length > 0 ? request.listSounds[index].name : '';
+        return listSounds.length > 0 && index >= 0 && index < listSounds.length ? listSounds[index].name : '';
     }
 
     function isDisabledButtonPlay() {
@@ -386,7 +397,7 @@ export function useAudioHelper(request: IRequestAudioHelper = {
     }
 
     function isDisabledButtonNext() {
-        return status === 'loading' || index === request.listSounds.length - 1;
+        return status === 'loading' || index === listSounds.length - 1;
     }
 
     function isDisabledButtonPrevious() {
@@ -394,7 +405,7 @@ export function useAudioHelper(request: IRequestAudioHelper = {
     }
 
     return {
-        play: () => play(player),
+        play: () => play(),
         pause,
         stop,
         next,
@@ -427,5 +438,7 @@ export function useAudioHelper(request: IRequestAudioHelper = {
         isLoop,
         isMuted,
         volume,
+        currentIndex: index,
+        setListSounds,
     }
 }
