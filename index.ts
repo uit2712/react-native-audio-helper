@@ -1,5 +1,5 @@
-import SoundPlayer from 'react-native-sound';
 import React from 'react';
+import SoundPlayer from 'react-native-sound';
 import { shuffleArray } from './functions';
 
 type AudioStatusType = 'loading' | 'success' | 'error' | 'play' | 'pause' | 'next' | 'previous' | 'stop';
@@ -221,7 +221,12 @@ export function useAudioHelper(request: IRequestAudioHelper = {
         }
     }, [request.isLogStatus, status])
 
-    function playComplete(isEnd: boolean) {
+    const [isLoop, setIsLoop] = React.useState(false);
+    function loop() {
+        setIsLoop(!isLoop);
+    }
+
+    const playComplete = React.useCallback((isEnd: boolean) => {
         if (isEnd === true) {
             if (isLoop === false) {
                 next();
@@ -229,7 +234,7 @@ export function useAudioHelper(request: IRequestAudioHelper = {
                 repeat();
             }
         }
-    }
+    }, [isLoop]);
 
     function repeat() {
         setCurrentTime(0);
@@ -336,11 +341,6 @@ export function useAudioHelper(request: IRequestAudioHelper = {
             player.setCurrentTime(seconds);
             setCurrentTime(seconds);
         }
-    }
-
-    const [isLoop, setIsLoop] = React.useState(false);
-    function loop() {
-        setIsLoop(!isLoop);
     }
 
     const [volume, setVolume] = React.useState(100); // percent
